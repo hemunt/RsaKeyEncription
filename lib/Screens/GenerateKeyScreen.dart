@@ -25,8 +25,8 @@ class GenerateKey extends StatelessWidget {
             padding: const EdgeInsets.only(top: 20.0),
             child: Column(
               children: [
-                const AppTextField(keyTypeText: "Private Key",),
-                const AppTextField(keyTypeText: "Public Key",),
+                 AppTextField(keyTypeText: "Private Key",),
+                 AppTextField(keyTypeText: "Public Key",),
                 GestureDetector(
                   child: Container(
                     height: 60,

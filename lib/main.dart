@@ -1,9 +1,5 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
-import 'package:rsa_message_encription/Screens/DashboardScreen.dart';
-
-import 'TextField/AppTextField.dart';
+import 'package:rsa_message_encription/Screens/SplashScreen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,9 +12,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner:  false,
-      home: DashboardScreen()
+      home: SplashScreen()
     );
   }
 }
