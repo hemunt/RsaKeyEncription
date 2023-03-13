@@ -1,40 +1,72 @@
 import 'package:flutter/material.dart';
 
+import '../AppConstent/Colors.dart';
+import '../KeyGenerator/RsaKeyHelper.dart';
+import '../LocalStorage/SessionManager.dart';
 import '../TextField/AppTextField.dart';
 
-class GenerateKey extends StatelessWidget {
+class GenerateKey extends StatefulWidget {
   const GenerateKey({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xff009688),
-        elevation: 0,
-        title: const Text("Generate Key",style: TextStyle(
-          fontWeight: FontWeight.w400,
-        )),
-        actions: const [
-          Icon(Icons.more_vert),
-        ],
-        leading:const  Icon(Icons.arrow_back),
+  State<GenerateKey> createState() => _GenerateKeyState();
+}
 
-      ),
-      body: SafeArea(
+class _GenerateKeyState extends State<GenerateKey> {
+  bool isLoading = false;
+  String? privateKey = "";
+  String? publicKey = "";
+
+  @override
+  void initState() {
+    if(SessionManager.isKeysSet()){
+      privateKey = SessionManager.getPrivateKey();
+      publicKey = SessionManager.getPublicKey();
+    }
+
+    super.initState();
+  }
+
+
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.only(top: 20.0),
             child: Column(
               children: [
-                 AppTextField(keyTypeText: "Private Key",),
-                 AppTextField(keyTypeText: "Public Key",),
+                AppTextField(keyTypeText: "Private Key",value: privateKey ?? "", fieldData: (val){}),
+                AppTextField(keyTypeText: "Public Key", value: publicKey ??"", fieldData: (val){}),
                 GestureDetector(
+                  onTap: (){
+                    setState(() {
+                      isLoading = true;
+                    });
+                    Future.delayed( const Duration(milliseconds: 500), () {
+                      RsaKeyHelper rsaKeyHelper = RsaKeyHelper();
+                      final pair = rsaKeyHelper.generateKeyPair();
+                      final public = pair.publicKey;
+                      final private = pair.privateKey;
+                      final publicKeyBase64 = rsaKeyHelper.encodePublicKeyToPem(public);
+                      final privateKeyBase64 = rsaKeyHelper.encodePrivateKeyToPem(private);
+                      SessionManager.setPrivateKey(privateKeyBase64);
+                      SessionManager.setPublicKey(publicKeyBase64);
+                      setState((){
+                        privateKey = privateKeyBase64;
+                        publicKey = publicKeyBase64;
+                        isLoading = false;
+                      });
+                    },);
+                  },
                   child: Container(
                     height: 60,
-                    margin: EdgeInsets.all(20.0),
+                    margin:const EdgeInsets.all(20.0),
                     width: double.infinity,
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20.0),
-                        color: Color(0xffFF5722)
+                        color:const Color(0xffFF5722)
                     ),
                     child: const Center(
                       child: Text(
@@ -47,7 +79,11 @@ class GenerateKey extends StatelessWidget {
                       ),
                     ),
                   ),
-                )
+                ),
+                const SizedBox(
+                  height: 30.0,
+                ),
+                isLoading ? CircularProgressIndicator(color: secondaryColor,) : const SizedBox(),
               ],
             ),
           )

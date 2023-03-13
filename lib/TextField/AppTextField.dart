@@ -7,7 +7,8 @@ class AppTextField extends StatefulWidget {
   final bool isCopy;
   final bool readOnly;
   final int maxLines;
-  AppTextField({Key? key, this.keyTypeText, this.value, this.isCopy = true, this.maxLines = 6,  this.readOnly = false}) : super(key: key);
+  final Function(String) fieldData;
+  AppTextField({Key? key, this.keyTypeText, this.value, this.isCopy = true, this.maxLines = 6,  this.readOnly = false, required this.fieldData}) : super(key: key);
 
   @override
   State<AppTextField> createState() => _AppTextFieldState();
@@ -50,6 +51,7 @@ class _AppTextFieldState extends State<AppTextField> {
                   maxLines: widget.maxLines,
                   onChanged: (text) {
                     fieldValue = text;
+                    widget.fieldData(text);
                   },
                   decoration: const InputDecoration(
                       border: InputBorder.none
@@ -62,6 +64,7 @@ class _AppTextFieldState extends State<AppTextField> {
                 child: GestureDetector(
                   onTap: () async{
                     await Clipboard.setData(ClipboardData(text: fieldValue));
+
                   },
                   child: Container(
                       padding: const EdgeInsets.all(10.0),
