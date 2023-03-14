@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-
+import 'package:get/get.dart';
 import '../AppConstent/Colors.dart';
+import '../Controller/EncryptionScreenController.dart';
 import '../KeyGenerator/RsaKeyHelper.dart';
 import '../LocalStorage/SessionManager.dart';
 import '../TextField/AppTextField.dart';
@@ -12,21 +13,19 @@ class EncryptMessage extends StatefulWidget {
 }
 
 class _EncryptMessageState extends State<EncryptMessage> {
+  EncryptionScreenController controller = Get.put(EncryptionScreenController());
 
-  String publicKey = "";
-  bool isLoading = false;
-  String message = "";
-  String encryptedMessage = "";
-  bool showMessageTF = false;
   @override
   void initState() {
     if(SessionManager.isKeysSet()){
-      publicKey = SessionManager.getPublicKey();
+      controller.publicKey.value = SessionManager.getPublicKey();
       }
-    message = SessionManager.getMessage();
+    controller.message.value = SessionManager.getMessage();
 
     super.initState();
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -36,19 +35,21 @@ class _EncryptMessageState extends State<EncryptMessage> {
             padding: const EdgeInsets.only(top: 20.0),
             child: Column(
               children: [
-                AppTextField(keyTypeText: "Write Your Message",maxLines: 4, isCopy: false,value: message, fieldData: (val){
-                  message = val;
-                }),
-                AppTextField(keyTypeText: "Your Public Key",maxLines: 2, fieldData: (val){}, readOnly: false, value: publicKey, isCopy: false,),
+                Obx(
+                  ()=> AppTextField(keyTypeText: "Write Your Message",maxLines: 4, isCopy: false,value: controller.message.value, fieldData: (val){
+                    controller.message.value = val;
+                  }),
+                ),
+                Obx(()=>AppTextField(keyTypeText: "Your Public Key",maxLines: 2, fieldData: (val){}, readOnly: false, value: controller.publicKey.value, isCopy: false,)),
                 GestureDetector(
                   onTap: (){
                     RsaKeyHelper rsaKeyHelper = RsaKeyHelper();
-                    encryptedMessage = rsaKeyHelper.encrypt(message, rsaKeyHelper.parsePublicKeyFromPem(publicKey));
-                    SessionManager.setEncryptedMessage(encryptedMessage);
-                    SessionManager.setMessage(message);
-                    rsaKeyHelper.decrypt(encryptedMessage, rsaKeyHelper.parsePrivateKeyFromPem(SessionManager.getPrivateKey()));
+                    controller.encryptedMessage.value = rsaKeyHelper.encrypt(controller.message.value, rsaKeyHelper.parsePublicKeyFromPem(controller.publicKey.value));
+                    SessionManager.setEncryptedMessage(controller.encryptedMessage.value);
+                    SessionManager.setMessage(controller.message.value);
+                    rsaKeyHelper.decrypt(controller.encryptedMessage.value, rsaKeyHelper.parsePrivateKeyFromPem(SessionManager.getPrivateKey()));
                     setState(() {
-                      showMessageTF = true;
+                      controller.showMessageTF.value = true;
                     });
                   },
                   child: Container(
@@ -71,12 +72,12 @@ class _EncryptMessageState extends State<EncryptMessage> {
                     ),
                   ),
                 ),
-                encryptedMessage != "" && showMessageTF ? AppTextField(keyTypeText: "Your Encrypted Message",label: "Encrypted Message", value: encryptedMessage,isCopy: true, fieldData: (val){}) : SizedBox(),
+                Obx( ()=> controller.encryptedMessage.value != "" && controller.showMessageTF.value ? AppTextField(keyTypeText: "Your Encrypted Message",label: "Encrypted Message", value: controller.encryptedMessage.value,isCopy: true, fieldData: (val){}) : SizedBox()),
 
                 const SizedBox(
                   height: 30.0,
                 ),
-                isLoading ? CircularProgressIndicator(color: secondaryColor,) : const SizedBox(),
+            Obx(()=> controller.isLoading.value ? CircularProgressIndicator(color: secondaryColor,) : const SizedBox()),
               ],
             ),
           )

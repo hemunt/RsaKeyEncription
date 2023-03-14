@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:rsa_message_encription/Screens/EncryptMessage.dart';
 import 'package:rsa_message_encription/Screens/GenerateKeyScreen.dart';
+
 import '../AppConstent/Colors.dart';
+import '../Controller/EncryptionScreenController.dart';
+import '../Controller/GenerareKeyScreenController.dart';
 import '../KeyGenerator/RsaKeyHelper.dart';
-import '../LocalStorage/SessionManager.dart';
 import '../TextField/AppTextField.dart';
+
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({Key? key}) : super(key: key);
 
@@ -21,38 +26,48 @@ class _DashboardScreenState extends State<DashboardScreen> {
   String? privateKey = "";
   String encryptedData = "";
   String realText = "Your Message Here...";
-@override
+  EncryptionScreenController controller = Get.put(EncryptionScreenController());
+  GenerateKeyScreenController controller2 =
+      Get.put(GenerateKeyScreenController());
+
+  @override
   void initState() {
-  screenSize = WidgetsBinding.instance.window.physicalSize;
-  width = screenSize?.width;
+    screenSize = WidgetsBinding.instance.window.physicalSize;
+    width = screenSize?.width;
 
-  super.initState();
+    super.initState();
   }
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       // backgroundColor: primaryColor,
-      floatingActionButton:_selectedIndex == 0 ? FloatingActionButton(
-        onPressed: (){
-          RsaKeyHelper helper = RsaKeyHelper();
-          setState(() {
-            realText = helper.decrypt(encryptedData.trim(), helper.parsePrivateKeyFromPem(privateKey));
-          },);
-        },
-        backgroundColor: secondaryColor,
-        child: Icon(Icons.remove_red_eye, color: Colors.white,),
-      ) : SizedBox(),
+      floatingActionButton: _selectedIndex == 0
+          ? FloatingActionButton(
+              onPressed: () {
+                RsaKeyHelper helper = RsaKeyHelper();
+                setState(
+                  () {
+                    realText = helper.decrypt(encryptedData.trim(),
+                        helper.parsePrivateKeyFromPem(privateKey));
+                  },
+                );
+              },
+              backgroundColor: secondaryColor,
+              child: const Icon(
+                Icons.remove_red_eye,
+                color: Colors.white,
+              ),
+            )
+          : SizedBox(),
       bottomNavigationBar: SizedBox(
         height: 80,
         child: BottomNavigationBar(
           currentIndex: _selectedIndex,
           type: BottomNavigationBarType.fixed,
-
           selectedItemColor: secondaryColor,
           unselectedItemColor: Colors.black,
-          onTap: (val){
+          onTap: (val) {
             setState(() {
               _selectedIndex = val;
             });
@@ -76,58 +91,120 @@ class _DashboardScreenState extends State<DashboardScreen> {
       appBar: AppBar(
         backgroundColor: primaryColor,
         elevation: 0,
-        title: const Text("",style: TextStyle(
-          fontWeight: FontWeight.w400,
-        )),
-        actions: const [
-          Padding(
-            padding: EdgeInsets.only(right: 10.0),
-            child: Icon(Icons.refresh),
+        title: const Text(
+          "",
+          style: TextStyle(
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+        actions: [
+          _selectedIndex == 0
+              ? GestureDetector(
+                  onTap: () async {
+                    await Clipboard.setData(ClipboardData(text: realText));
+                    final snackBar = SnackBar(
+                      content: Row(
+                        children: const [
+                          Text(
+                            "Message ",
+                            style: TextStyle(
+                                fontWeight: FontWeight.w700, fontSize: 16),
+                          ),
+                          Text("added to clipboard"),
+                        ],
+                      ),
+                      action: SnackBarAction(
+                        label: 'Ok',
+                        onPressed: () {},
+                      ),
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  },
+                  child: const Padding(
+                    padding: EdgeInsets.only(right: 16.0),
+                    child: Icon(
+                      Icons.copy,
+                      size: 20,
+                    ),
+                  ),
+                )
+              : const SizedBox(),
+          GestureDetector(
+            onTap: () {
+              if (_selectedIndex == 0) {
+                setState(() {
+                  privateKey = "";
+                  encryptedData = "";
+                });
+              } else if (_selectedIndex == 1) {
+                controller.refreshPage();
+              } else {
+                controller2.refreshPage();
+              }
+            },
+            child: Container(
+                padding: const EdgeInsets.only(
+                    top: 10.0, left: 10.0, right: 16.0, bottom: 10.0),
+                child: const Icon(Icons.refresh)),
           ),
         ],
-        leading:GestureDetector(
-            onTap: (){setState(() {
-              _selectedIndex = 0;
-            });},
-            child: const  Icon(Icons.home)),
+        leading: GestureDetector(
+            onTap: () {
+              setState(() {
+                _selectedIndex = 0;
+              });
+            },
+            child: const Icon(Icons.home)),
       ),
       body: [
         SingleChildScrollView(
           child: SafeArea(
-            child: Column(
-              children: [
-                Container(
-                  height: MediaQuery.of(context).size.height / 4,
-                  color: primaryColor,
-                  child: Center(
-                    child: Text(realText,style:  TextStyle(
+              child: Column(
+            children: [
+              Container(
+                height: MediaQuery.of(context).size.height / 4,
+                color: primaryColor,
+                child: Center(
+                  child: Text(
+                    realText,
+                    style: TextStyle(
                         fontSize: 26,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.black.withOpacity(.6)
-                    ),),
+                        fontWeight: FontWeight.w700,
+                        color: Colors.black.withOpacity(.6)),
                   ),
                 ),
-                SizedBox(
-                  height: 20.0,
+              ),
+              const SizedBox(
+                height: 20.0,
+              ),
+              Container(
+                color: Colors.white,
+                child: Column(
+                  children: [
+                    AppTextField(
+                      keyTypeText: "Past Your Encrypted Message",
+                      isCopy: false,
+                      fieldData: (val) {
+                        encryptedData = val;
+                      },
+                      value: encryptedData,
+                    ),
+                    AppTextField(
+                      keyTypeText: "Private Key Here For Decryption",
+                      value: privateKey,
+                      maxLines: 2,
+                      fieldData: (val) {
+                        privateKey = val;
+                      },
+                      isCopy: false,
+                    ),
+                  ],
                 ),
-                Container(
-                  color: Colors.white,
-                  child: Column(
-                   children: [
-                     AppTextField(keyTypeText: "Past Your Encrypted Message", isCopy: false, fieldData: (val){
-                       encryptedData = val;
-                     }, value: encryptedData,),
-                     AppTextField(keyTypeText: "Private Key Here For Decryption",value: privateKey,maxLines: 2, fieldData: (val){
-                       privateKey = val;
-                     }, isCopy: false,),
-                   ],
-                  ),
-                )
-              ],
-            )
-      ),
+              )
+            ],
+          )),
         ),
-       const EncryptMessage(),
+        const EncryptMessage(),
         const GenerateKey(),
       ].elementAt(_selectedIndex),
     );

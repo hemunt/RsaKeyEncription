@@ -39,6 +39,8 @@ dependencies:
   shared_preferences: ^2.0.15
   pointycastle: ^3.6.2
   asn1lib: ^1.4.0
+  get: ^4.6.5
+
 
 dev_dependencies:
   flutter_test:

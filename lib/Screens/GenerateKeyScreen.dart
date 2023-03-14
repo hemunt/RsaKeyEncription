@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../AppConstent/Colors.dart';
+import '../Controller/GenerareKeyScreenController.dart';
 import '../KeyGenerator/RsaKeyHelper.dart';
 import '../LocalStorage/SessionManager.dart';
 import '../TextField/AppTextField.dart';
@@ -13,17 +15,13 @@ class GenerateKey extends StatefulWidget {
 }
 
 class _GenerateKeyState extends State<GenerateKey> {
-  bool isLoading = false;
-  String? privateKey = "";
-  String? publicKey = "";
-
+  GenerateKeyScreenController  controller =  Get.put(GenerateKeyScreenController());
   @override
   void initState() {
     if(SessionManager.isKeysSet()){
-      privateKey = SessionManager.getPrivateKey();
-      publicKey = SessionManager.getPublicKey();
+      controller.privateKey.value = SessionManager.getPrivateKey();
+      controller.publicKey.value = SessionManager.getPublicKey();
     }
-
     super.initState();
   }
 
@@ -37,13 +35,11 @@ class _GenerateKeyState extends State<GenerateKey> {
             padding: const EdgeInsets.only(top: 20.0),
             child: Column(
               children: [
-                AppTextField(keyTypeText: "Private Key",value: privateKey ?? "", fieldData: (val){}, label: "Private Key",),
-                AppTextField(keyTypeText: "Public Key", value: publicKey ??"", fieldData: (val){}, label: "Public Key",),
+                Obx(()=> AppTextField(keyTypeText: "Private Key",value: controller.privateKey.value, fieldData: (val){}, label: "Private Key",)),
+                Obx(()=> AppTextField(keyTypeText: "Public Key", value: controller.publicKey.value, fieldData: (val){}, label: "Public Key",)),
                 GestureDetector(
                   onTap: (){
-                    setState(() {
-                      isLoading = true;
-                    });
+                      controller.isLoading.value = true;
                     Future.delayed( const Duration(milliseconds: 500), () {
                       RsaKeyHelper rsaKeyHelper = RsaKeyHelper();
                       final pair = rsaKeyHelper.generateKeyPair();
@@ -54,9 +50,9 @@ class _GenerateKeyState extends State<GenerateKey> {
                       SessionManager.setPrivateKey(privateKeyBase64);
                       SessionManager.setPublicKey(publicKeyBase64);
                       setState((){
-                        privateKey = privateKeyBase64;
-                        publicKey = publicKeyBase64;
-                        isLoading = false;
+                        controller.privateKey.value = privateKeyBase64;
+                        controller.publicKey.value = publicKeyBase64;
+                        controller.isLoading.value = false;
                       });
                     },);
                   },
@@ -83,7 +79,7 @@ class _GenerateKeyState extends State<GenerateKey> {
                 const SizedBox(
                   height: 30.0,
                 ),
-                isLoading ? CircularProgressIndicator(color: secondaryColor,) : const SizedBox(),
+                Obx(()=> controller.isLoading.value ? CircularProgressIndicator(color: secondaryColor,) : const SizedBox()),
               ],
             ),
           )
