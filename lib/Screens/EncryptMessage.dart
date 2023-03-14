@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../AppConstent/Colors.dart';
+import '../KeyGenerator/RsaKeyHelper.dart';
 import '../LocalStorage/SessionManager.dart';
 import '../TextField/AppTextField.dart';
 class EncryptMessage extends StatefulWidget {
@@ -12,18 +13,20 @@ class EncryptMessage extends StatefulWidget {
 
 class _EncryptMessageState extends State<EncryptMessage> {
 
-  String privateKey = "";
+  String publicKey = "";
   bool isLoading = false;
-
+  String message = "";
+  String encryptedMessage = "";
+  bool showMessageTF = false;
   @override
   void initState() {
     if(SessionManager.isKeysSet()){
-      privateKey = SessionManager.getPrivateKey();
+      publicKey = SessionManager.getPublicKey();
       }
+    message = SessionManager.getMessage();
+
     super.initState();
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -33,12 +36,20 @@ class _EncryptMessageState extends State<EncryptMessage> {
             padding: const EdgeInsets.only(top: 20.0),
             child: Column(
               children: [
-                AppTextField(keyTypeText: "Write Your Message", isCopy: false, fieldData: (val){}),
-                AppTextField(keyTypeText: "Your Private Key",maxLines: 1, fieldData: (val){}, readOnly: true, value: privateKey ??"", isCopy: false,),
-                AppTextField(keyTypeText: "Your Encrypted Message", isCopy: true, fieldData: (val){}),
+                AppTextField(keyTypeText: "Write Your Message",maxLines: 4, isCopy: false,value: message, fieldData: (val){
+                  message = val;
+                }),
+                AppTextField(keyTypeText: "Your Public Key",maxLines: 2, fieldData: (val){}, readOnly: false, value: publicKey, isCopy: false,),
                 GestureDetector(
                   onTap: (){
-
+                    RsaKeyHelper rsaKeyHelper = RsaKeyHelper();
+                    encryptedMessage = rsaKeyHelper.encrypt(message, rsaKeyHelper.parsePublicKeyFromPem(publicKey));
+                    SessionManager.setEncryptedMessage(encryptedMessage);
+                    SessionManager.setMessage(message);
+                    rsaKeyHelper.decrypt(encryptedMessage, rsaKeyHelper.parsePrivateKeyFromPem(SessionManager.getPrivateKey()));
+                    setState(() {
+                      showMessageTF = true;
+                    });
                   },
                   child: Container(
                     height: 60,
@@ -60,6 +71,8 @@ class _EncryptMessageState extends State<EncryptMessage> {
                     ),
                   ),
                 ),
+                encryptedMessage != "" && showMessageTF ? AppTextField(keyTypeText: "Your Encrypted Message",label: "Encrypted Message", value: encryptedMessage,isCopy: true, fieldData: (val){}) : SizedBox(),
+
                 const SizedBox(
                   height: 30.0,
                 ),

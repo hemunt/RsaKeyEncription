@@ -4,11 +4,12 @@ import 'package:flutter/services.dart';
 class AppTextField extends StatefulWidget {
   final String? keyTypeText;
   final String? value;
+  final String? label;
   final bool isCopy;
   final bool readOnly;
   final int maxLines;
   final Function(String) fieldData;
-  AppTextField({Key? key, this.keyTypeText, this.value, this.isCopy = true, this.maxLines = 6,  this.readOnly = false, required this.fieldData}) : super(key: key);
+  AppTextField({Key? key, this.keyTypeText, this.value, this.isCopy = true, this.maxLines = 6,  this.readOnly = false, required this.fieldData, this.label}) : super(key: key);
 
   @override
   State<AppTextField> createState() => _AppTextFieldState();
@@ -47,7 +48,7 @@ class _AppTextFieldState extends State<AppTextField> {
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
                   readOnly: widget.readOnly,
-                  controller: TextEditingController(text: widget.value),
+                  controller: TextEditingController(text: widget.value)..selection = TextSelection.collapsed(offset: widget.value!.length),
                   maxLines: widget.maxLines,
                   onChanged: (text) {
                     fieldValue = text;
@@ -64,7 +65,20 @@ class _AppTextFieldState extends State<AppTextField> {
                 child: GestureDetector(
                   onTap: () async{
                     await Clipboard.setData(ClipboardData(text: fieldValue));
-
+                    final snackBar = SnackBar(
+                      content: Row(
+                        children: [
+                          Text("${widget.label} ", style: TextStyle(fontWeight: FontWeight.w700,fontSize: 16),),
+                          Text("added to clipboard"),
+                        ],
+                      ),
+                      action: SnackBarAction(
+                        label: 'Ok',
+                        onPressed: () {
+                        },
+                      ),
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
                   },
                   child: Container(
                       padding: const EdgeInsets.all(10.0),
@@ -75,7 +89,6 @@ class _AppTextFieldState extends State<AppTextField> {
                       child: const Icon(Icons.copy, size: 20,)),
                 ),
               ) : const SizedBox(),
-
             ],
           ),
         ),

@@ -37,8 +37,8 @@ class _GenerateKeyState extends State<GenerateKey> {
             padding: const EdgeInsets.only(top: 20.0),
             child: Column(
               children: [
-                AppTextField(keyTypeText: "Private Key",value: privateKey ?? "", fieldData: (val){}),
-                AppTextField(keyTypeText: "Public Key", value: publicKey ??"", fieldData: (val){}),
+                AppTextField(keyTypeText: "Private Key",value: privateKey ?? "", fieldData: (val){}, label: "Private Key",),
+                AppTextField(keyTypeText: "Public Key", value: publicKey ??"", fieldData: (val){}, label: "Public Key",),
                 GestureDetector(
                   onTap: (){
                     setState(() {

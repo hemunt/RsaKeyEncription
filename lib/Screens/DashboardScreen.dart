@@ -19,16 +19,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
   int _selectedIndex = 0;
   bool isLoading = false;
   String? privateKey = "";
-  String? publicKey = "";
-
+  String encryptedData = "";
+  String realText = "Your Message Here...";
 @override
   void initState() {
   screenSize = WidgetsBinding.instance.window.physicalSize;
   width = screenSize?.width;
-  if(SessionManager.isKeysSet()){
-    privateKey = SessionManager.getPrivateKey();
-    publicKey = SessionManager.getPublicKey();
-  }
+
   super.initState();
   }
 
@@ -37,11 +34,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       // backgroundColor: primaryColor,
-      floatingActionButton: FloatingActionButton(
-        onPressed: (){},
+      floatingActionButton:_selectedIndex == 0 ? FloatingActionButton(
+        onPressed: (){
+          RsaKeyHelper helper = RsaKeyHelper();
+          setState(() {
+            realText = helper.decrypt(encryptedData.trim(), helper.parsePrivateKeyFromPem(privateKey));
+          },);
+        },
         backgroundColor: secondaryColor,
         child: Icon(Icons.remove_red_eye, color: Colors.white,),
-      ),
+      ) : SizedBox(),
       bottomNavigationBar: SizedBox(
         height: 80,
         child: BottomNavigationBar(
@@ -98,7 +100,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   height: MediaQuery.of(context).size.height / 4,
                   color: primaryColor,
                   child: Center(
-                    child: Text("Your Message Here...",style:  TextStyle(
+                    child: Text(realText,style:  TextStyle(
                         fontSize: 26,
                       fontWeight: FontWeight.w700,
                       color: Colors.black.withOpacity(.6)
@@ -112,8 +114,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   color: Colors.white,
                   child: Column(
                    children: [
-                     AppTextField(keyTypeText: "Past Your Encrypted Message", isCopy: false, fieldData: (val){}),
-                     AppTextField(keyTypeText: "Public Key Here For Decryption",maxLines: 2, fieldData: (val){}, isCopy: false,),
+                     AppTextField(keyTypeText: "Past Your Encrypted Message", isCopy: false, fieldData: (val){
+                       encryptedData = val;
+                     }, value: encryptedData,),
+                     AppTextField(keyTypeText: "Private Key Here For Decryption",value: privateKey,maxLines: 2, fieldData: (val){
+                       privateKey = val;
+                     }, isCopy: false,),
                    ],
                   ),
                 )

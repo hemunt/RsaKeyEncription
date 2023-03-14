@@ -5,6 +5,29 @@ class SessionManager {
 
   static const String _privateKey = "PRIVATE_KEY_2048";
   static const String _publicKey = "PUBLIC_KEY_2048";
+  static const String _encryptdMessage = "ENCRYPTED_MESSAGE";
+  static const String _Message = "ENCRYPTED_MESSAGE";
+
+
+  static setMessage(String message) {
+    AppStorage.store.setString(_Message, message);
+  }
+
+
+  static String getMessage() {
+    return AppStorage.store.getString(_Message) ?? "";
+  }
+
+  static setEncryptedMessage(String message) {
+    AppStorage.store.setString(_encryptdMessage, message);
+  }
+
+
+  static String getEncryptedMessage() {
+    return AppStorage.store.getString(_encryptdMessage) ?? "";
+  }
+
+
 
   static setPrivateKey(String key) {
     AppStorage.store.setString(_privateKey, key);
