@@ -43,14 +43,40 @@ class _EncryptMessageState extends State<EncryptMessage> {
                 Obx(()=>AppTextField(keyTypeText: "Your Public Key",maxLines: 2, fieldData: (val){}, readOnly: false, value: controller.publicKey.value, isCopy: false,)),
                 GestureDetector(
                   onTap: (){
-                    RsaKeyHelper rsaKeyHelper = RsaKeyHelper();
-                    controller.encryptedMessage.value = rsaKeyHelper.encrypt(controller.message.value, rsaKeyHelper.parsePublicKeyFromPem(controller.publicKey.value));
-                    SessionManager.setEncryptedMessage(controller.encryptedMessage.value);
-                    SessionManager.setMessage(controller.message.value);
-                    rsaKeyHelper.decrypt(controller.encryptedMessage.value, rsaKeyHelper.parsePrivateKeyFromPem(SessionManager.getPrivateKey()));
-                    setState(() {
-                      controller.showMessageTF.value = true;
-                    });
+                    if(controller.message.value == ""){
+                      final snackBar = SnackBar(
+                        backgroundColor: secondaryColor,
+                        content: const Text("Make sure to fill message field", style: TextStyle(fontWeight: FontWeight.w700,fontSize: 16),),
+                        action: SnackBarAction(
+                          textColor: Colors.white,
+                          label: 'Ok',
+                          onPressed: () {
+                          },
+                        ),
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    } else if(controller.publicKey.value == ""){
+                      final snackBar = SnackBar(
+                        backgroundColor: secondaryColor,
+                        content: const Text("Make sure to add Public Key to Encrypt", style: TextStyle(fontWeight: FontWeight.w700,fontSize: 16),),
+                        action: SnackBarAction(
+                          textColor: Colors.white,
+                          label: 'Ok',
+                          onPressed: () {
+                          },
+                        ),
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    } else {
+                      RsaKeyHelper rsaKeyHelper = RsaKeyHelper();
+                      controller.encryptedMessage.value = rsaKeyHelper.encrypt(controller.message.value, rsaKeyHelper.parsePublicKeyFromPem(controller.publicKey.value));
+                      SessionManager.setEncryptedMessage(controller.encryptedMessage.value);
+                      SessionManager.setMessage(controller.message.value);
+                      rsaKeyHelper.decrypt(controller.encryptedMessage.value, rsaKeyHelper.parsePrivateKeyFromPem(SessionManager.getPrivateKey()));
+                      setState(() {
+                        controller.showMessageTF.value = true;
+                      });
+                    }
                   },
                   child: Container(
                     height: 60,
@@ -72,7 +98,7 @@ class _EncryptMessageState extends State<EncryptMessage> {
                     ),
                   ),
                 ),
-                Obx( ()=> controller.encryptedMessage.value != "" && controller.showMessageTF.value ? AppTextField(keyTypeText: "Your Encrypted Message",label: "Encrypted Message", value: controller.encryptedMessage.value,isCopy: true, fieldData: (val){}) : SizedBox()),
+                Obx( ()=> controller.encryptedMessage.value != "" && controller.showMessageTF.value ? AppTextField(keyTypeText: "Your Encrypted Message",label: "Encrypted Message", value: controller.encryptedMessage.value,isCopy: true, fieldData: (val){}) : const SizedBox()),
 
                 const SizedBox(
                   height: 30.0,

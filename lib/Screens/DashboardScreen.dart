@@ -98,6 +98,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ),
         actions: [
+          GestureDetector(
+            onTap: () {
+           setState(() {
+             _selectedIndex = 2;
+           });
+            },
+            child: Container(
+                padding: const EdgeInsets.only(
+                    top: 10.0, left: 10.0, right: 16.0, bottom: 10.0),
+                child: const Icon(Icons.key)),
+          ),
           _selectedIndex == 0
               ? GestureDetector(
                   onTap: () async {

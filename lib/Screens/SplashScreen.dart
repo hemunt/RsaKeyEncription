@@ -36,15 +36,22 @@ class _SplashScreenState extends State<SplashScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text("RSA", style: TextStyle(
+              Image.asset("assets/mspy.png", width: 130,),
+              SizedBox(
+                height: 150,
+              ),
+              Text("Encryption Spy", style: TextStyle(
                  color: secondaryColor,
                 fontWeight: FontWeight.w700,
-                fontSize: 92,
+                fontSize: 42,
               ),),
-              const Text("Message Encryption",style: TextStyle(
+              SizedBox(
+                height: 10,
+              ),
+              const Text("Message Encryption Tool",style: TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.w500,
-                fontSize: 22,
+                fontSize: 18,
               ),),
               const SizedBox(
                 height: 30.0,
