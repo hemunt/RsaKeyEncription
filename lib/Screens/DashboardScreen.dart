@@ -5,10 +5,12 @@ import 'package:rsa_message_encription/Screens/EncryptMessage.dart';
 import 'package:rsa_message_encription/Screens/GenerateKeyScreen.dart';
 
 import '../AppConstent/Colors.dart';
+import '../Components/MyIconButton.dart';
 import '../Controller/EncryptionScreenController.dart';
 import '../Controller/GenerareKeyScreenController.dart';
 import '../KeyGenerator/RsaKeyHelper.dart';
 import '../TextField/AppTextField.dart';
+import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({Key? key}) : super(key: key);
@@ -26,6 +28,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   String? privateKey = "";
   String encryptedData = "";
   String realText = "Your Message Here...";
+  final PageController _pageController = PageController();
   EncryptionScreenController controller = Get.put(EncryptionScreenController());
   GenerateKeyScreenController controller2 =
       Get.put(GenerateKeyScreenController());
@@ -41,9 +44,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: primaryColor,
+      backgroundColor: Colors.white,
       floatingActionButton: _selectedIndex == 0
-          ? FloatingActionButton(
+          ? FloatingActionButton.extended(label: const Text('Decrypt'),
+              icon: const Icon( Icons.remove_red_eye,color: Colors.white,),
               onPressed: () {
                 RsaKeyHelper helper = RsaKeyHelper();
                 setState(
@@ -54,170 +58,182 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 );
               },
               backgroundColor: secondaryColor,
-              child: const Icon(
-                Icons.remove_red_eye,
-                color: Colors.white,
-              ),
+
             )
           : SizedBox(),
-      bottomNavigationBar: SizedBox(
-        height: 80,
-        child: BottomNavigationBar(
+      bottomNavigationBar: Container(
+        padding: EdgeInsets.only(left: 30.0,right: 30.0),
+        margin: EdgeInsets.only(bottom: 6.0),
+        height: 60,
+        child: SalomonBottomBar(
           currentIndex: _selectedIndex,
-          type: BottomNavigationBarType.fixed,
           selectedItemColor: secondaryColor,
           unselectedItemColor: Colors.black,
           onTap: (val) {
             setState(() {
               _selectedIndex = val;
+              _pageController.animateToPage(_selectedIndex, duration:const Duration(milliseconds: 200), curve: Curves.linear);
             });
           },
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
+          items:  [
+            SalomonBottomBarItem(
+              icon: const Icon(Icons.home),
+              title: const Text('Home'),
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.lock),
-              label: 'encrypt Message',
+            SalomonBottomBarItem(
+              icon:const Icon(Icons.lock),
+              title:const Text('encrypt Message'),
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.key),
-              label: 'Keys',
+            SalomonBottomBarItem(
+              icon: const Icon(Icons.key),
+              title: const Text('Keys'),
             ),
           ],
         ),
       ),
-      appBar: AppBar(
-        backgroundColor: primaryColor,
-        elevation: 0,
-        title: const Text(
-          "",
-          style: TextStyle(
-            fontWeight: FontWeight.w400,
-          ),
-        ),
-        actions: [
-          GestureDetector(
-            onTap: () {
-           setState(() {
-             _selectedIndex = 2;
-           });
-            },
-            child: Container(
-                padding: const EdgeInsets.only(
-                    top: 10.0, left: 10.0, right: 16.0, bottom: 10.0),
-                child: const Icon(Icons.key)),
-          ),
-          _selectedIndex == 0
-              ? GestureDetector(
-                  onTap: () async {
-                    await Clipboard.setData(ClipboardData(text: realText));
-                    final snackBar = SnackBar(
-                      content: Row(
-                        children: const [
-                          Text(
-                            "Message ",
-                            style: TextStyle(
-                                fontWeight: FontWeight.w700, fontSize: 16),
+      body: PageView(
+        scrollBehavior: MyBehavior(),
+        controller: _pageController,
+        onPageChanged: (index){
+            setState(() {
+              _selectedIndex = index;
+            });
+        },
+        children:  [
+          SingleChildScrollView(
+            child: Column(
+              children: [
+                Container(
+                  color: primaryColor,
+                  child: SafeArea(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(30.0),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: IconButton(
+                                icon: const Icon(Icons.home,color: Colors.white,),
+                                onPressed: (){
+                                  setState(() {
+                                    _selectedIndex = 0;
+                                    _pageController.animateToPage(_selectedIndex, duration:const Duration(milliseconds: 200), curve: Curves.linear);
+                                  });
+                                }
+                            ),
                           ),
-                          Text("added to clipboard"),
-                        ],
-                      ),
-                      action: SnackBarAction(
-                        label: 'Ok',
-                        onPressed: () {},
-                      ),
-                    );
-                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                  },
-                  child: const Padding(
-                    padding: EdgeInsets.only(right: 16.0),
-                    child: Icon(
-                      Icons.copy,
-                      size: 20,
+                        ),
+                        Row(
+                          children: [
+                            MyIconButton(
+                              onPresses: (){
+                                setState(() {
+                                  _selectedIndex = 2;
+                                  _pageController.animateToPage(_selectedIndex, duration:const Duration(milliseconds: 200), curve: Curves.linear);
+                                });
+                              },
+                              iconData: Icons.key,
+                              iconColor: Colors.white,
+                              size: 24,
+                            ),
+                            MyIconButton(
+                              onPresses: (){
+                                setState(() {
+                                  privateKey = "";
+                                  encryptedData = "";
+                                });
+                              },
+                              iconData: Icons.refresh,
+                              iconColor: Colors.white,
+                              size: 24,
+                            ),
+                            MyIconButton(
+                              onPresses: ()async{
+                                await Clipboard.setData(ClipboardData(text: realText));
+                                final snackBar = SnackBar(
+                                  content: Row(
+                                    children: const [
+                                      Text(
+                                        "Message ",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w700, fontSize: 16),
+                                      ),
+                                      Text("added to clipboard"),
+                                    ],
+                                  ),
+                                  action: SnackBarAction(
+                                    label: 'Ok',
+                                    onPressed: () {},
+                                  ),
+                                );
+                                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                              },
+                              iconData: Icons.copy,
+                              iconColor: Colors.white,
+                            ),
+
+
+                          ],
+                        ),
+                      ],
                     ),
+                  ),
+                ),
+                Container(
+                  height: MediaQuery.of(context).size.height / 4,
+                  color: primaryColor,
+                  child: Center(
+                    child: Text(
+                      realText,
+                      style: TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.black.withOpacity(.6)),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 20.0,
+                ),
+                Container(
+                  color: Colors.white,
+                  child: Column(
+                    children: [
+                      AppTextField(
+                        keyTypeText: "Past Your Encrypted Message",
+                        isCopy: false,
+                        fieldData: (val) {
+                          encryptedData = val;
+                        },
+                        value: encryptedData,
+                      ),
+                      AppTextField(
+                        keyTypeText: "Private Key Here For Decryption",
+                        value: privateKey,
+                        maxLines: 2,
+                        fieldData: (val) {
+                          privateKey = val;
+                        },
+                        isCopy: false,
+                      ),
+                    ],
                   ),
                 )
-              : const SizedBox(),
-          GestureDetector(
-            onTap: () {
-              if (_selectedIndex == 0) {
-                setState(() {
-                  privateKey = "";
-                  encryptedData = "";
-                });
-              } else if (_selectedIndex == 1) {
-                controller.refreshPage();
-              } else {
-                controller2.refreshPage();
-              }
-            },
-            child: Container(
-                padding: const EdgeInsets.only(
-                    top: 10.0, left: 10.0, right: 16.0, bottom: 10.0),
-                child: const Icon(Icons.refresh)),
+              ],
+            ),
           ),
+          const EncryptMessage(),
+          const GenerateKey(),
         ],
-        leading: GestureDetector(
-            onTap: () {
-              setState(() {
-                _selectedIndex = 0;
-              });
-            },
-            child: const Icon(Icons.home)),
-      ),
-      body: [
-        SingleChildScrollView(
-          child: SafeArea(
-              child: Column(
-            children: [
-              Container(
-                height: MediaQuery.of(context).size.height / 4,
-                color: primaryColor,
-                child: Center(
-                  child: Text(
-                    realText,
-                    style: TextStyle(
-                        fontSize: 26,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.black.withOpacity(.6)),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 20.0,
-              ),
-              Container(
-                color: Colors.white,
-                child: Column(
-                  children: [
-                    AppTextField(
-                      keyTypeText: "Past Your Encrypted Message",
-                      isCopy: false,
-                      fieldData: (val) {
-                        encryptedData = val;
-                      },
-                      value: encryptedData,
-                    ),
-                    AppTextField(
-                      keyTypeText: "Private Key Here For Decryption",
-                      value: privateKey,
-                      maxLines: 2,
-                      fieldData: (val) {
-                        privateKey = val;
-                      },
-                      isCopy: false,
-                    ),
-                  ],
-                ),
-              )
-            ],
-          )),
-        ),
-        const EncryptMessage(),
-        const GenerateKey(),
-      ].elementAt(_selectedIndex),
+      )
     );
   }
 }
+class MyBehavior extends ScrollBehavior {
+  @override
+  Widget buildOverscrollIndicator(BuildContext context, Widget child, ScrollableDetails details) {
+    return child;
+  }
+}
+

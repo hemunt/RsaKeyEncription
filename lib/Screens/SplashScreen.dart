@@ -3,6 +3,7 @@ import 'package:rsa_message_encription/AppConstent/Colors.dart';
 import 'package:rsa_message_encription/Screens/DashboardScreen.dart';
 
 import '../LocalStorage/AppStorage.dart';
+import 'package:get/get.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -18,10 +19,8 @@ class _SplashScreenState extends State<SplashScreen> {
   WidgetsBinding.instance.addPostFrameCallback(
     (_)async{
       await AppStorage.init();
-      Future.delayed(Duration(seconds: 1),() {
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return DashboardScreen();
-        },));
+      Future.delayed(const Duration(seconds: 1),() {
+        Get.offAll(() => const DashboardScreen());
       },);
     }
   );
