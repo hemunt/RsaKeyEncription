@@ -34,13 +34,13 @@ class _GenerateKeyState extends State<GenerateKey> {
       child: Column(
         children: [
           Container(
-            padding: EdgeInsets.only(bottom: 4.0,left: 16.0,right: 10),
+            padding: const EdgeInsets.only(bottom: 4.0,left: 16.0,right: 10),
             color: primaryColor,
             child: SafeArea(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("Generate Key Pair",style: TextStyle(
+                  const Text("Generate Key Pair",style: TextStyle(
                     color: Colors.white,
                     fontSize: 18,
                     fontWeight: FontWeight.w500
@@ -61,7 +61,7 @@ class _GenerateKeyState extends State<GenerateKey> {
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 30.0,
           ),
           Obx(()=> AppTextField(keyTypeText: "Private Key",value: controller.privateKey.value, fieldData: (val){}, label: "Private Key",)),
