@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.rsa_message_encription">
+    package="com.hemuntsharma.encryptionspy">
    <application
         android:label="rsa_message_encription"
         android:name="${applicationName}"

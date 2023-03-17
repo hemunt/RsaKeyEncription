@@ -1,4 +1,4 @@
-package com.example.rsa_message_encription
+package com.hemuntsharma.encryptionspy
 
 import io.flutter.embedding.android.FlutterActivity
 
