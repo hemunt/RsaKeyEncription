@@ -68,6 +68,7 @@ class _EncryptMessageState extends State<EncryptMessage> {
                         onPresses: ()async{
                           // await Clipboard.setData(ClipboardData(text: ));
                           final snackBar = SnackBar(
+                            behavior: SnackBarBehavior.floating,
                             content: Row(
                               children: const [
                                 Text(
@@ -107,6 +108,7 @@ class _EncryptMessageState extends State<EncryptMessage> {
             onTap: (){
               if(controller.message.value == ""){
                 final snackBar = SnackBar(
+                  behavior: SnackBarBehavior.floating,
                   backgroundColor: secondaryColor,
                   content: const Text("Make sure to fill message field", style: TextStyle(fontWeight: FontWeight.w700,fontSize: 16),),
                   action: SnackBarAction(
@@ -119,6 +121,7 @@ class _EncryptMessageState extends State<EncryptMessage> {
                 ScaffoldMessenger.of(context).showSnackBar(snackBar);
               } else if(controller.publicKey.value == ""){
                 final snackBar = SnackBar(
+                  behavior: SnackBarBehavior.floating,
                   backgroundColor: secondaryColor,
                   content: const Text("Make sure to add Public Key to Encrypt", style: TextStyle(fontWeight: FontWeight.w700,fontSize: 16),),
                   action: SnackBarAction(

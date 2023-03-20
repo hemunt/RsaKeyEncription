@@ -66,6 +66,7 @@ class _AppTextFieldState extends State<AppTextField> {
                   onTap: () async{
                     await Clipboard.setData(ClipboardData(text: fieldValue));
                     final snackBar = SnackBar(
+                      behavior: SnackBarBehavior.floating,
                       content: Row(
                         children: [
                           Text("${widget.label} ", style: TextStyle(fontWeight: FontWeight.w700,fontSize: 16),),

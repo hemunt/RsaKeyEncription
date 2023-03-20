@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.hemuntsharma.encryptionspy">
    <application
-        android:label="rsa_message_encription"
+        android:label="Encryption Spy"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

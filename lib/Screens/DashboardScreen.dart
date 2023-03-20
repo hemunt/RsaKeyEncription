@@ -45,8 +45,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      floatingActionButton: _selectedIndex == 0
-          ? FloatingActionButton.extended(label: const Text('Decrypt'),
+      floatingActionButton: _selectedIndex == 0 ? FloatingActionButton.extended(label: const Text('Decrypt'),
               icon: const Icon( Icons.remove_red_eye,color: Colors.white,),
               onPressed: () {
                 RsaKeyHelper helper = RsaKeyHelper();
@@ -58,8 +57,30 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 );
               },
               backgroundColor: secondaryColor,
-
             )
+      //     : _selectedIndex == 1 ? FloatingActionButton.extended(label: const Text('Encrypt'),
+      //   icon: const Icon( Icons.no_encryption,color: Colors.white,),
+      //   onPressed: () {
+      //     RsaKeyHelper helper = RsaKeyHelper();
+      //     setState(
+      //           () {
+      //
+      //       },
+      //     );
+      //   },
+      //   backgroundColor: secondaryColor,
+      // ): _selectedIndex == 2 ? FloatingActionButton.extended(label: const Text('Generate'),
+      //   icon: const Icon( Icons.key,color: Colors.white,),
+      //   onPressed: () {
+      //     RsaKeyHelper helper = RsaKeyHelper();
+      //     setState(
+      //           () {
+      //
+      //       },
+      //     );
+      //   },
+      //   backgroundColor: secondaryColor,
+      // )
           : SizedBox(),
       bottomNavigationBar: Container(
         padding: EdgeInsets.only(left: 30.0,right: 30.0),
@@ -82,7 +103,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
             SalomonBottomBarItem(
               icon:const Icon(Icons.lock),
-              title:const Text('encrypt Message'),
+              title:const Text('Encrypt'),
             ),
             SalomonBottomBarItem(
               icon: const Icon(Icons.key),
@@ -152,6 +173,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               onPresses: ()async{
                                 await Clipboard.setData(ClipboardData(text: realText));
                                 final snackBar = SnackBar(
+
+                                  behavior: SnackBarBehavior.floating,
                                   content: Row(
                                     children: const [
                                       Text(
