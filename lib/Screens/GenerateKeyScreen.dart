@@ -5,7 +5,7 @@ import '../AppConstent/Colors.dart';
 import '../Components/MyIconButton.dart';
 import '../Controller/GenerareKeyScreenController.dart';
 import '../KeyGenerator/RsaKeyHelper.dart';
-import '../LocalStorage/SessionManager.dart';
+import '../LocalStorage/StorageHelper.dart';
 import '../TextField/AppTextField.dart';
 
 class GenerateKey extends StatefulWidget {
@@ -17,6 +17,7 @@ class GenerateKey extends StatefulWidget {
 
 class _GenerateKeyState extends State<GenerateKey> {
   GenerateKeyScreenController  controller =  Get.put(GenerateKeyScreenController());
+  StorageHelper SessionManager = StorageHelper();
   @override
   void initState() {
     if(SessionManager.isKeysSet()){
@@ -40,11 +41,7 @@ class _GenerateKeyState extends State<GenerateKey> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text("Generate Key Pair",style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500
-                  ),),
+                  const Text("Generate Key Pair",style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Colors.white),),
                   Row(
                     children: [
                       MyIconButton(

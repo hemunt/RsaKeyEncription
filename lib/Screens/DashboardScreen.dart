@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:rsa_message_encription/Screens/EncryptMessage.dart';
-import 'package:rsa_message_encription/Screens/GenerateKeyScreen.dart';
 
 import '../AppConstent/Colors.dart';
 import '../Components/MyIconButton.dart';
@@ -11,6 +9,9 @@ import '../Controller/GenerareKeyScreenController.dart';
 import '../KeyGenerator/RsaKeyHelper.dart';
 import '../TextField/AppTextField.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
+
+import 'EncryptMessage.dart';
+import 'GenerateKeyScreen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({Key? key}) : super(key: key);
@@ -30,8 +31,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   String realText = "Your Message Here...";
   final PageController _pageController = PageController();
   EncryptionScreenController controller = Get.put(EncryptionScreenController());
-  GenerateKeyScreenController controller2 =
-      Get.put(GenerateKeyScreenController());
+  GenerateKeyScreenController controller2 = Get.put(GenerateKeyScreenController());
 
   @override
   void initState() {
@@ -45,47 +45,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      floatingActionButton: _selectedIndex == 0 ? FloatingActionButton.extended(label: const Text('Decrypt'),
+      floatingActionButton: _selectedIndex == 0 ? FloatingActionButton.extended(label: const Text('Decrypt', style: TextStyle(color: Colors.white, fontSize: 14,fontWeight: FontWeight.w600),),
               icon: const Icon( Icons.remove_red_eye,color: Colors.white,),
               onPressed: () {
                 RsaKeyHelper helper = RsaKeyHelper();
-                setState(
-                  () {
+                setState(() {
                     realText = helper.decrypt(encryptedData.trim(),
                         helper.parsePrivateKeyFromPem(privateKey));
                   },
                 );
               },
               backgroundColor: secondaryColor,
-            )
-      //     : _selectedIndex == 1 ? FloatingActionButton.extended(label: const Text('Encrypt'),
-      //   icon: const Icon( Icons.no_encryption,color: Colors.white,),
-      //   onPressed: () {
-      //     RsaKeyHelper helper = RsaKeyHelper();
-      //     setState(
-      //           () {
-      //
-      //       },
-      //     );
-      //   },
-      //   backgroundColor: secondaryColor,
-      // ): _selectedIndex == 2 ? FloatingActionButton.extended(label: const Text('Generate'),
-      //   icon: const Icon( Icons.key,color: Colors.white,),
-      //   onPressed: () {
-      //     RsaKeyHelper helper = RsaKeyHelper();
-      //     setState(
-      //           () {
-      //
-      //       },
-      //     );
-      //   },
-      //   backgroundColor: secondaryColor,
-      // )
-          : SizedBox(),
+            ) : const SizedBox(),
       bottomNavigationBar: Container(
-        padding: EdgeInsets.only(left: 30.0,right: 30.0),
-        margin: EdgeInsets.only(bottom: 6.0),
-        height: 60,
+        padding: const EdgeInsets.only(left: 30.0,right: 30.0),
+        margin: const EdgeInsets.only(bottom: 6.0),
+        // height: 160,
         child: SalomonBottomBar(
           currentIndex: _selectedIndex,
           selectedItemColor: secondaryColor,
@@ -130,21 +105,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(30.0),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: IconButton(
-                                icon: const Icon(Icons.home,color: Colors.white,),
-                                onPressed: (){
-                                  setState(() {
-                                    _selectedIndex = 0;
-                                    _pageController.animateToPage(_selectedIndex, duration:const Duration(milliseconds: 200), curve: Curves.linear);
-                                  });
-                                }
-                            ),
-                          ),
-                        ),
+                        const Text("Decrypt your message", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Colors.white),).marginOnly(left: 20.0),
                         Row(
                           children: [
                             MyIconButton(
@@ -175,8 +136,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 final snackBar = SnackBar(
 
                                   behavior: SnackBarBehavior.floating,
-                                  content: Row(
-                                    children: const [
+                                  content: const Row(
+                                    children: [
                                       Text(
                                         "Message ",
                                         style: TextStyle(

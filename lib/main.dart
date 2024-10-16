@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:rsa_message_encription/Screens/SplashScreen.dart';
 import 'package:get/get.dart';
+
+import 'Screens/SplashScreen.dart';
 
 void main() {
   runApp(const MyApp());

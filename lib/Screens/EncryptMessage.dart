@@ -5,7 +5,7 @@ import '../AppConstent/Colors.dart';
 import '../Components/MyIconButton.dart';
 import '../Controller/EncryptionScreenController.dart';
 import '../KeyGenerator/RsaKeyHelper.dart';
-import '../LocalStorage/SessionManager.dart';
+import '../LocalStorage/StorageHelper.dart';
 import '../TextField/AppTextField.dart';
 class EncryptMessage extends StatefulWidget {
   const EncryptMessage({Key? key}) : super(key: key);
@@ -16,7 +16,7 @@ class EncryptMessage extends StatefulWidget {
 
 class _EncryptMessageState extends State<EncryptMessage> {
   EncryptionScreenController controller = Get.put(EncryptionScreenController());
-
+  StorageHelper SessionManager = StorageHelper();
   @override
   void initState() {
     if(SessionManager.isKeysSet()){
@@ -41,11 +41,7 @@ class _EncryptMessageState extends State<EncryptMessage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("Encrypt your message",style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500
-                  ),),
+                  Text("Encrypt your message",style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Colors.white),),
                   Row(
                     children: [
                       MyIconButton(

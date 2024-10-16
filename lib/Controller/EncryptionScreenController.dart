@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:rsa_message_encription/LocalStorage/SessionManager.dart';
+
+import '../LocalStorage/StorageHelper.dart';
 
 class EncryptionScreenController  extends GetxController {
 
@@ -9,6 +10,7 @@ class EncryptionScreenController  extends GetxController {
   RxString message = "".obs;
   RxString encryptedMessage = "".obs;
   RxBool showMessageTF = false.obs;
+  StorageHelper SessionManager = StorageHelper();
 
   void refreshPage(){
     encryptedMessage.value  = "";
